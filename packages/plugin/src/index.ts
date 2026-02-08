@@ -176,7 +176,20 @@ export interface Hooks {
     input: { sessionID: string; agent: string; model: Model; provider: ProviderContext; message: UserMessage },
     output: { headers: Record<string, string> },
   ) => Promise<void>
-  "permission.ask"?: (input: Permission, output: { status: "ask" | "deny" | "allow" }) => Promise<void>
+  /**
+   * Called when a tool needs permission and the ruleset evaluates to "ask".
+   * Plugins can override the status to "allow" or "deny" to skip the user prompt.
+   */
+  "permission.ask"?: (
+    input: {
+      permission: string
+      pattern: string
+      sessionID: string
+      metadata: Record<string, any>
+      tool?: { messageID: string; callID: string }
+    },
+    output: { status: "ask" | "deny" | "allow" },
+  ) => Promise<void>
   "command.execute.before"?: (
     input: { command: string; sessionID: string; arguments: string },
     output: { parts: Part[] },
